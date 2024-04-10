@@ -1,0 +1,172 @@
+
+
+.container{
+    margin: 0;
+   
+    padding-top: 0;  
+    padding-bottom: 0;  
+    padding-right: 0;  
+    padding-left: 10;  
+    /* padding-left: 10;   */
+    height: 100vh;
+    width: 100vw;
+   background-image: url("../assets/newbg.jpg");
+   background-position: fixed;
+   background-size: cover;
+   background-attachment: fixed;
+   /* background-repeat: no-repeat; */
+   /* opacity: 0.9; */
+   display: flex;
+   flex-direction: column;
+   justify-content: start;
+   align-items: start;
+   /* left: 20px; */
+   
+}
+.day{
+    height: 100px;
+    width: 20%;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 20px;
+    padding-top: 17px;
+    padding-left: 17px;
+    display: flex;
+    flex-direction: column;
+   
+    font-size: 25px;
+}
+
+main{
+    height: 100%;
+    width: 100%;
+    margin-left: 10px;
+    padding-left: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    /* align-items: center; */
+}
+
+.first {
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+     /* align-items: center; */
+    /* justify-content: space-around;  */
+}
+.first  h2{
+    width: 13%;
+    font-size: 25px;
+    /* background-color: rgba(0, 0, 0, 0.503); */
+    /* color: aliceblue; */
+    border-radius: 2px;
+}
+
+.one,.two{
+  
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    gap: 12px;
+} 
+.todoLIst,.completeTask{
+    
+      width: 95%;
+      height: 37px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+     /* opacity: 0.8; */
+     background-color: rgba(0, 0, 0, 0.503);
+     color: white;
+     border-radius: 10px;
+}
+
+
+.inner {
+    width: 10%;
+    height: 100%;
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 7px;
+  padding-left: 7px;
+ 
+}
+.inner div{
+    width: 60%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+ .icon{
+    width: 16%;
+   
+    display: flex;
+    justify-content: space-around;
+}
+.icon-inner{
+width: 47%;
+display: flex;
+justify-content: space-between;
+}
+.icon2{
+    width: 11%;
+    justify-content: space-around;
+    display: flex;
+    padding-right: 5px;
+}
+
+
+.fa-solid{
+    cursor: pointer;
+    padding-right: 10px;
+}
+.fa-solid:hover{
+    cursor: pointer;
+    
+    transform: scale(1.2);
+   
+}
+
+
+.fa-trash:hover{
+    color: red;
+    transform: scale(1.2);
+} 
+
+.fa-edit:hover{
+    color: rgb(21, 21, 201);
+    transform: scale(1.2);
+}
+
+
+
+.star-filled {
+    color: rgb(225, 237, 8); 
+  }
+  
+
+
+#text{
+    width: 65%;
+    height: 37px;
+    background-color: rgba(0, 0, 0, 0.503);
+    color: white;
+    
+margin-bottom: 17px;
+border-radius: 10px;
+ 
+}
+
+
+
+
+
+
