@@ -65,6 +65,8 @@
         <input class="date" type="date" formControlName="taskOfDate" [min]="minDate">
       <span style="color: red;" *ngIf="taskOfDate &&  taskOfDate.invalid && taskOfDate.touched">
         <span *ngIf="taskOfDate.errors?.['required']">Date is required</span>
+        <span *ngIf="taskOfDate.errors?.['invalidDate']">Do not select past Dates</span>
+        
       </span>
       </div>
       <button type="submit" [disabled]="NewTaskForm.invalid" class="button">
