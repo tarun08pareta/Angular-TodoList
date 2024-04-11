@@ -14,12 +14,16 @@
         <div class="todoLIst" *ngFor="let task of tasks">
           <div class="inner">
             <input type="checkbox"  (change)="completeTask(task)">
-            <div *ngIf="!task.editMode">{{task.name | uppercase}}</div>
-            <span>{{task.minDate}}</span>
-            <input type="text" *ngIf="task.editMode" [(ngModel)]="task.name" (keydown.enter)="updateTask(task)">
+            <div>{{task.name | uppercase}}</div>
+            <input type="text" *ngIf="task.editMode" [(ngModel)]="task.name">
+            <!-- <input type="text"  *ngIf="task.editMode" [(ngModel)]="task.name" (keydown.enter)="updateTask(task)"> -->
+           
           </div>
           <div class="icon">
+            <div class="inner-icon-upper">
+              <span>{{task.minDate}}</span>
             <i class="fas fa-edit" (click)="toggleEditMode(task)"></i>
+            </div>
             <div class="icon-inner">
               <i class="fas fa-trash" (click)="deleteTask(task)"></i>
             <i class="fa-solid fa-star" [ngClass]="{'star-filled': task.starred}" (click)="toggleStar(task)"></i>
@@ -49,15 +53,24 @@
       </div>
     </div>
     <form [formGroup]="NewTaskForm" (ngSubmit)="addTask()">
+     <div class="input">
+      <input id="text" type="text" placeholder=" + ADD Your New Task" formControlName="NewTask" (keydown.enter)="addTask()">
       <span style="color: red;" *ngIf=" NewTask && NewTask.invalid && NewTask.touched">
         <span *ngIf="NewTask.errors?.['required']">This field is required</span>
         <span *ngIf="NewTask.errors?.['maxlength']">Length is at max (15)</span>
         <span *ngIf="NewTask.errors?.['pattern']">Only characters allowed</span>
       </span>
-      
-      <input id="text" type="text" placeholder=" + ADD Your New Task" formControlName="NewTask" (keydown.enter)="addTask()">
-      <input type="date" formControlName="taskOfDate" [min]="minDate">
-      <button type="submit" [disabled]="NewTaskForm.invalid" >Add Task</button>
+     </div>
+      <div class="dateValidation">
+        <input class="date" type="date" formControlName="taskOfDate" [min]="minDate">
+      <span style="color: red;" *ngIf="taskOfDate &&  taskOfDate.invalid && taskOfDate.touched">
+        <span *ngIf="taskOfDate.errors?.['required']">Date is required</span>
+      </span>
+      </div>
+      <button type="submit" [disabled]="NewTaskForm.invalid" class="button">
+       AddTask
+      </button>
+      <!-- <button>updateTask</button> -->
     </form>
   </main>
 </div>

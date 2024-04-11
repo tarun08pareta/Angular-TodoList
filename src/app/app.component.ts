@@ -29,12 +29,29 @@ export class AppComponent implements OnInit {
 }
 
   NewTaskForm = new  FormGroup({
-    NewTask : new FormControl('',[Validators.required ,Validators.maxLength(15),Validators.pattern('[a-zA-Z]+$')]),
-    taskOfDate: new FormControl('',[Validators.required])
+    NewTask : new FormControl('',[Validators.required ,Validators.maxLength(15), Validators.pattern('^[a-zA-Z]+( [a-zA-Z]+)*$')]),
+    taskOfDate: new FormControl('',[Validators.required,this.manualDateValidator.bind(this)])
 
   })
  
+  manualDateValidator() {
+    return (control: FormControl) => {
+      const enteredDate = control.value;
+      const currentDate = new Date();
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
+      if (!enteredDate || !dateRegex.test(enteredDate)) {
+        return { invalidFormat: true };
+      }
+
+      const manualDate = new Date(enteredDate);
+      if (manualDate > currentDate) {
+        return { futureDate: true };
+      }
+
+      return null;
+    };
+  }
   get NewTask()
   {
     return this.NewTaskForm.get('NewTask');
@@ -92,12 +109,18 @@ export class AppComponent implements OnInit {
   }
 
   toggleEditMode(task: { name: string, completed: boolean, starred: boolean, editMode: boolean }) {
-    task.editMode = !task.editMode;
+    // task.editMode = true;
+    this.NewTaskForm.get('NewTask')?.setValue(task.name);
+    
   }
+  
 
   updateTask(task: { name: string, completed: boolean, starred: boolean, editMode: boolean }) {
+    
     task.editMode = false;
     this.saveLocalStorage();
+
+    
   }
 
   // ngOnInit(): void {
