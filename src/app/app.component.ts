@@ -1,38 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import {
   FormGroup,
-  FormsModule,
   FormControl,
   Validators,
-  ValidationErrors,
   ValidatorFn,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+// Import the Task interface
+interface Task {
+  name: string;
+  completed: boolean;
+  starred: boolean;
+  editMode: boolean;
+  minDate: string;
+}
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  // Don't include RouterOutlet in the imports array
 })
 export class AppComponent implements OnInit {
   currentDate: Date = new Date();
-  // NewTask: string = "";
-  tasks: {
-    name: string;
-    completed: boolean;
-    starred: boolean;
-    editMode: boolean;
-    minDate: string;
-  }[] = [];
-  completedTasks: {
-    name: string;
-    completed: boolean;
-    starred: boolean;
-    editMode: boolean;
-    minDate: string;
-  }[] = [];
-
+  mode: string = 'Add';
+  editTask: Task | null = null;
+  tasks: Task[] = [];
+  completedTasks: Task[] = [];
   minDate: string = '';
 
   ngOnInit(): void {
@@ -40,6 +32,7 @@ export class AppComponent implements OnInit {
     this.minDate = this.formatDate(today);
     this.loadData();
   }
+
   formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -50,9 +43,9 @@ export class AppComponent implements OnInit {
   NewTaskForm = new FormGroup({
     NewTask: new FormControl('', [
       Validators.required,
-      Validators.maxLength(15),
-      
-      Validators.pattern('^[a-zA-Z]+( [a-zA-Z]+)*$'),
+
+      this.maxLengthWithoutWhitespace(15),
+      Validators.pattern('\\s*[a-zA-Z]+(\\s*[a-zA-Z]+)*\\s*'),
     ]),
     taskOfDate: new FormControl('', [
       Validators.required,
@@ -60,16 +53,27 @@ export class AppComponent implements OnInit {
     ]),
   });
 
-  
-  
+  maxLengthWithoutWhitespace(maxLength: number): ValidatorFn {
+    return (control: any): { [key: string]: boolean } | null => {
+      const value = control.value?.replace(/\s/g, ''); // Remove whitespace
+
+      if (value.length > maxLength) {
+        return { maxlength: true };
+      }
+      return null;
+    };
+  }
+
   validateDueDate(control: any): { [key: string]: boolean } | null {
     const selectedDate = new Date(control.value);
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    if (selectedDate < today) {
-      return { invalidDate: true };
+    // console.log(today)
+    if (selectedDate >= today) {
+      return null;
     }
-    return null;
+    return { invalidDate: true };
   }
 
   get NewTask() {
@@ -81,35 +85,51 @@ export class AppComponent implements OnInit {
   }
 
   addTask() {
-    // console.log(this.NewTaskForm.value);
-    console.log(this.taskOfDate?.value);
-    if (this.NewTaskForm.valid) {
-      const newTaskValue = this.NewTaskForm.get('NewTask')?.value;
-      const newTaskDate = this.NewTaskForm.get('taskOfDate')?.value;
-      if (newTaskValue && newTaskDate) {
-        const newTask = {
+    const newTaskValue = this.NewTaskForm.get('NewTask')?.value;
+    const newTaskDate = this.NewTaskForm.get('taskOfDate')?.value;
+
+    if (this.mode === 'Update') {
+      const newTask: Task = {
+        name: newTaskValue || '',
+        minDate: newTaskDate || '',
+        completed: this.editTask?.completed || false,
+        starred: this.editTask?.starred || false,
+        editMode: false,
+      };
+
+      if (
+        this.editTask !== null &&
+        newTask.name !== '' &&
+        newTask.minDate !== ''
+      ) {
+        const findIndex = this.tasks.indexOf(this.editTask);
+        const findIndexComplete = this.completedTasks.indexOf(this.editTask);
+        if (newTask.completed == false) {
+          this.tasks.splice(findIndex, 1, newTask);
+        } else {
+          this.completedTasks.splice(findIndexComplete, 1, newTask);
+        }
+      }
+    } else {
+      if (this.NewTaskForm.valid && newTaskValue && newTaskDate) {
+        const newTask: Task = {
           name: newTaskValue,
           minDate: newTaskDate,
           completed: false,
           starred: false,
           editMode: false,
         };
-        if (this.tasks) {
-          this.tasks.push(newTask);
-          this.saveLocalStorage();
-          this.NewTaskForm.reset();
-        }
+        this.tasks.push(newTask);
+        this.saveLocalStorage();
+        this.NewTaskForm.reset();
       }
     }
+    this.mode = 'Add';
+    this.NewTaskForm.get('NewTask')?.setValue('');
+    this.NewTaskForm.get('taskOfDate')?.setValue('');
   }
 
-  completeTask(task: {
-    name: string;
-    completed: boolean;
-    starred: boolean;
-    editMode: boolean;
-    minDate: string;
-  }) {
+  completeTask(task: Task) {
     task.completed = !task.completed;
     if (task.completed) {
       this.completedTasks.push(task);
@@ -121,22 +141,12 @@ export class AppComponent implements OnInit {
     this.saveLocalStorage();
   }
 
-  toggleStar(task: {
-    name: string;
-    completed: boolean;
-    starred: boolean;
-    editMode: boolean;
-  }) {
+  toggleStar(task: Task) {
     task.starred = !task.starred;
     this.saveLocalStorage();
   }
 
-  deleteTask(taskToDelete: {
-    name: string;
-    completed: boolean;
-    starred: boolean;
-    editMode: boolean;
-  }) {
+  deleteTask(taskToDelete: Task) {
     this.tasks = this.tasks.filter((task) => task !== taskToDelete);
     this.completedTasks = this.completedTasks.filter(
       (task) => task !== taskToDelete
@@ -144,29 +154,12 @@ export class AppComponent implements OnInit {
     this.saveLocalStorage();
   }
 
-  toggleEditMode(task: {
-    name: string;
-    completed: boolean;
-    starred: boolean;
-    editMode: boolean;
-  }) {
-    // task.editMode = true;
+  toggleEditMode(task: Task) {
+    this.mode = 'Update';
+    this.editTask = task;
     this.NewTaskForm.get('NewTask')?.setValue(task.name);
+    this.NewTaskForm.get('taskOfDate')?.setValue(task.minDate);
   }
-
-  updateTask(task: {
-    name: string;
-    completed: boolean;
-    starred: boolean;
-    editMode: boolean;
-  }) {
-    task.editMode = false;
-    this.saveLocalStorage();
-  }
-
-  // ngOnInit(): void {
-  //   this.loadData();
-  // }
 
   loadData() {
     if (typeof window !== 'undefined') {
